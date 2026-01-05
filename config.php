@@ -3,10 +3,11 @@
 // Configuration Centralisée du Projet
 // ========================================
 
-// Base de données
-define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
-define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('DB_PASSWORD') ?: '');
+// Base de données (ENV PRIORITAIRE)
+define('DB_HOST', getenv('DB_HOST') ?: 'gkg8okscco40wc4c44w8cc4g');
+define('DB_PORT', getenv('DB_PORT') ?: 3306);
+define('DB_USER', getenv('DB_USER') ?: 'mysql');
+define('DB_PASS', getenv('DB_PASSWORD') ?: '7qi4SExAaIr56Rwatmdz6v8vyD7KdmeXyO6NbuNrzUQIf3UZvLANcltITCVSexVL');
 define('DB_NAME', getenv('DB_NAME') ?: 'bibliotheques_db');
 
 // Site
@@ -25,10 +26,19 @@ define('ADMIN_MODE_SESSION_KEY', 'is_admin');
 
 // Connexion à la base de données
 function getConnection() {
-    $con = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $con = new mysqli(
+        DB_HOST,
+        DB_USER,
+        DB_PASS,
+        DB_NAME,
+        DB_PORT
+    );
+
     if ($con->connect_error) {
-        die("Erreur de connexion: " . $con->connect_error);
+        error_log("DB ERROR: " . $con->connect_error);
+        die("Erreur de connexion à la base de données");
     }
+
     $con->set_charset("utf8mb4");
     return $con;
 }
@@ -37,5 +47,3 @@ function getConnection() {
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
-?>
