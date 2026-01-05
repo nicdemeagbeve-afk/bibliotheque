@@ -4,14 +4,14 @@
 // ========================================
 
 // Base de données
-define('DB_HOST', '127.0.0.1');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'bibliotheques_db');
+define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASSWORD') ?: '');
+define('DB_NAME', getenv('DB_NAME') ?: 'bibliotheques_db');
 
 // Site
 define('SITE_NAME', 'Bibliothèques De la Reussite');
-define('SITE_URL', 'http://localhost/revisionphp');
+define('SITE_URL', 'https://bibliotheque.miabesite.site');
 define('CURRENT_YEAR', 2026);
 
 // Upload
