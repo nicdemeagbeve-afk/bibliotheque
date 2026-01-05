@@ -1,0 +1,28 @@
+<?php
+session_start();
+include "connexion.php";
+
+// Vérifier si admin
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
+    header("Location: /revisionphp/login.php");
+    exit;
+}
+
+    if (isset($_GET['id']) && !empty($_GET['id'])) {
+        $id = intval($_GET['id']);
+
+        $query = "DELETE FROM livres WHERE id = $id";
+
+        if ($con->query($query)) {
+            echo '<div style="color: green; padding: 20px; text-align: center; background: #d4edda; border: 1px solid #28a745; border-radius: 8px; margin: 20px;">✅ Livre supprimé avec succès!</div>';
+            header("Refresh: 2; url=/revisionphp/index.php");
+            exit;
+        } else {
+            echo '<div style="color: red; padding: 20px; text-align: center;">❌ Erreur lors de la suppression: ' . $con->error . '</div>';
+            exit;
+        }
+    } else {
+        echo '<div style="color: red; padding: 20px; text-align: center;">❌ ID de livre manquant!</div>';
+        exit;
+    }
+?>
