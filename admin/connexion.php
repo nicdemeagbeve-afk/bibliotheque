@@ -1,9 +1,9 @@
 <?php
 // admin/connexion.php recommandé (PDO)
-$DB_HOST = getenv('DB_HOST') ?: '127.0.0.1';
-$DB_NAME = getenv('DB_NAME') ?: 'bibliotheques_db';
-$DB_USER = getenv('DB_USER') ?: 'app_user';
-$DB_PASS = getenv('DB_PASS') ?: 'votre_mot_de_passe_sécurisé';
+$DB_HOST = getenv('DB_HOST') ?: 'mysql-database-o84o4skkk8000c0kkcsos4oc';
+$DB_NAME = getenv('DB_NAME') ?: 'default';
+$DB_USER = getenv('DB_USER') ?: 'mysql';
+$DB_PASS = getenv('DB_PASS') ?: 'rFzwnPxDKQa9dbTjuhbGt94mqJwOaJ5erpUjU8pjqqoil58bjtdPb6Lq1XMYPino';
 
 $options = [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
