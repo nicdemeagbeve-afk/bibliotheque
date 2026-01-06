@@ -61,7 +61,7 @@ try {
             padding: 30px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f1c039 0%, #f59e0b 100%);
             color: white;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
