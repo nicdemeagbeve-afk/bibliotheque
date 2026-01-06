@@ -1,17 +1,18 @@
 <?php
 session_start();
 include __DIR__ . '/connexion.php';
+include __DIR__ . '/config.php'; // Include config for SITE_URL
 
 // Rediriger si non connecté
 if (!isset($_SESSION['user_id'])) {
-    header("Location: /revisionphp/login.php");
+    header("Location: " . SITE_URL . "/login.php");
     exit;
 }
 
 $user_id = $_SESSION['user_id'];
-$user_name = $_SESSION['user_name'];
-$user_email = $_SESSION['user_email'];
-$user_role = $_SESSION['user_role'];
+$user = null; // Initialize $user to null
+$favoris_count = 0;
+$lecture_count = 0;
 
 // Récupérer infos de l'utilisateur
 try {
@@ -19,21 +20,30 @@ try {
     $stmt->execute([$user_id]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Compter favoris
-    $user_id_str = (string)$user_id;
-    $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM favoris WHERE id_lecteur = ?");
-    $stmt->execute([$user_id_str]);
-    $favoris_count = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+    if ($user) {
+        // Compter favoris
+        $user_id_str = (string)$user_id;
+        $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM favoris WHERE id_lecteur = ?");
+        $stmt->execute([$user_id_str]);
+        $favoris_count = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
 
-    // Compter liste de lecture
-    $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM liste_lecture WHERE id_lecteur = ?");
-    $stmt->execute([$user_id_str]);
-    $lecture_count = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+        // Compter liste de lecture
+        $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM liste_lecture WHERE id_lecteur = ?");
+        $stmt->execute([$user_id_str]);
+        $lecture_count = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+    } else {
+        // If user is not found in DB, destroy session and redirect
+        session_destroy();
+        header("Location: " . SITE_URL . "/login.php");
+        exit;
+    }
+
 } catch (PDOException $e) {
     error_log("Profile data fetch failed: " . $e->getMessage());
-    $user = null;
-    $favoris_count = 0;
-    $lecture_count = 0;
+    // Optionally redirect to an error page or login with a message
+    session_destroy();
+    header("Location: " . SITE_URL . "/login.php?error=db_error");
+    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -182,16 +192,16 @@ try {
             <div class="profile-info">
                 <div class="profile-row">
                     <span class="profile-label">Nom:</span>
-                    <span class="profile-value"><?= htmlspecialchars($user['nom_lecteur']) ?></span>
+                    <span class="profile-value"><?= htmlspecialchars($user['nom_lecteur'] ?? 'N/A') ?></span>
                 </div>
                 <div class="profile-row">
                     <span class="profile-label">Email:</span>
-                    <span class="profile-value"><?= htmlspecialchars($user['email']) ?></span>
+                    <span class="profile-value"><?= htmlspecialchars($user['email'] ?? 'N/A') ?></span>
                 </div>
                 <div class="profile-row">
                     <span class="profile-label">Rôle:</span>
                     <span class="profile-value">
-                        <?php if ($user['role'] === 'admin'): ?>
+                        <?php if (($user['role'] ?? '') === 'admin'): ?>
                             <span class="role-badge role-admin">ADMINISTRATEUR</span>
                         <?php else: ?>
                             <span class="role-badge role-user">Utilisateur</span>
@@ -200,12 +210,12 @@ try {
                 </div>
                 <div class="profile-row">
                     <span class="profile-label">Inscrit le:</span>
-                    <span class="profile-value"><?= date('d/m/Y à H:i', strtotime($user['date_inscription'])) ?></span>
+                    <span class="profile-value"><?= date('d/m/Y à H:i', strtotime($user['date_inscription'] ?? 'now')) ?></span>
                 </div>
                 <div class="profile-row">
                     <span class="profile-label">Dernier accès:</span>
                     <span class="profile-value">
-                        <?= $user['dernier_acces'] ? date('d/m/Y à H:i', strtotime($user['dernier_acces'])) : 'Première connexion' ?>
+                        <?= ($user['dernier_acces'] ? date('d/m/Y à H:i', strtotime($user['dernier_acces'])) : 'Première connexion') ?>
                     </span>
                 </div>
             </div>

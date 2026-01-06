@@ -1,10 +1,11 @@
 <?php
 session_start();
 include __DIR__ . '/connexion.php';
+include __DIR__ . '/config.php'; // Include config for SITE_URL
 
 // Rediriger si déjà connecté
 if (isset($_SESSION['user_id'])) {
-    header("Location: /revisionphp/index.php");
+    header("Location: " . SITE_URL . "/index.php");
     exit;
 }
 
@@ -35,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt = $pdo->prepare("UPDATE lecteurs SET dernier_acces = NOW() WHERE id_lecteur = ?");
                     $stmt->execute([$user['id_lecteur']]);
 
-                    header("Location: /revisionphp/index.php");
+                    header("Location: " . SITE_URL . "/index.php");
                     exit;
                 } else {
                     $error = '❌ Mot de passe incorrect.';
@@ -176,9 +177,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <footer>
         <nav>
             <ul>
-                <li><a href="/revisionphp/faq.php">FAQ</a></li>
-                <li><a href="/revisionphp/conditions.php">Conditions d'utilisation</a></li>
-                <li><a href="/revisionphp/apropos.php">À propos</a></li>
+                <li><a href="<?php echo SITE_URL; ?>/faq.php">FAQ</a></li>
+                <li><a href="<?php echo SITE_URL; ?>/conditions.php">Conditions d'utilisation</a></li>
+                <li><a href="<?php echo SITE_URL; ?>/apropos.php">À propos</a></li>
             </ul>
         </nav>
         <h1>Bibliothèques De la Reussite</h1>
