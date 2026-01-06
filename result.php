@@ -25,7 +25,8 @@ if (isset($_GET["search"]) && !empty($_GET['search'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
+ <link rel="stylesheet" href="css/style.css">
+   <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
     <title>Resultat de la recherche</title>
 </head>
 <body>
@@ -67,8 +68,10 @@ if (isset($_GET["search"]) && !empty($_GET['search'])) {
                             <p class="auteur"><strong>Auteur:</strong> <?php echo htmlspecialchars($livre['auteur']); ?></p>
                             <p class="maison"><strong>Édition:</strong> <?php echo htmlspecialchars($livre['maison_edition'] ?? 'N/A'); ?></p>
                             <a href="detail.php?id=<?php echo $livre['id']; ?>" class="btn-details">Voir plus</a>
-                            <a href="admin/edit.php?id=<?php echo $livre['id']; ?>" class="btn-edit">Modifier</a>
-                            <a href="admin/delete.php?id=<?php echo $livre['id']; ?>" class="btn-delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livre ?');">Supprimer</a>
+                            <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+                                <a href="admin/edit.php?id=<?php echo $livre['id']; ?>" class="btn-edit">Modifier</a>
+                                <a href="admin/delete.php?id=<?php echo $livre['id']; ?>" class="btn-delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livre ?');">Supprimer</a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
