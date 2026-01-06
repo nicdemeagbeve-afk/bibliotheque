@@ -10,10 +10,10 @@ if (!getenv('DB_HOST') && file_exists(__DIR__ . '/../.env')) {
     }
 }
 
-$DB_HOST = getenv('DB_HOST') ?: 'localhost';
+$DB_HOST = getenv('DB_HOST') ?: 'gkg8okscco40wc4c44w8cc4g';
 $DB_NAME = getenv('DB_NAME') ?: 'bibliotheques_db';
 $DB_USER = getenv('DB_USER') ?: 'root';
-$DB_PASS = getenv('DB_PASS') ?: '';
+$DB_PASS = getenv('DB_PASS') ?: '0qsbHlBRl49m5EfI7TndcForVm5j3t8fubWAqoqCIzYlSm75GWmZGjFmbaEO0BQ0';
 
 $options = [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
