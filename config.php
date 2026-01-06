@@ -6,8 +6,8 @@
 // Base de données (ENV PRIORITAIRE)
 define('DB_HOST', getenv('DB_HOST') ?: 'gkg8okscco40wc4c44w8cc4g');
 define('DB_PORT', getenv('DB_PORT') ?: 3306);
-define('DB_USER', getenv('DB_USER') ?: 'mysql');
-define('DB_PASS', getenv('DB_PASSWORD') ?: '7qi4SExAaIr56Rwatmdz6v8vyD7KdmeXyO6NbuNrzUQIf3UZvLANcltITCVSexVL');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASSWORD') ?: '0qsbHlBRl49m5EfI7TndcForVm5j3t8fubWAqoqCIzYlSm75GWmZGjFmbaEO0BQ0');
 define('DB_NAME', getenv('DB_NAME') ?: 'bibliotheques_db');
 
 // Site
