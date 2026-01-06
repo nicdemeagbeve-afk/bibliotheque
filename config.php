@@ -15,10 +15,10 @@ if (file_exists(__DIR__ . '/.env')) {
 }
 
 // Base de données (ENV PRIORITAIRE)
-define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_HOST', getenv('DB_HOST') ?: 'gkg8okscco40wc4c44w8cc4g');
 define('DB_PORT', getenv('DB_PORT') ?: 3306);
 define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('DB_PASS') ?: '');
+define('DB_PASS', getenv('DB_PASS') ?: '0qsbHlBRl49m5EfI7TndcForVm5j3t8fubWAqoqCIzYlSm75GWmZGjFmbaEO0BQ0');
 define('DB_NAME', getenv('DB_NAME') ?: 'bibliotheques_db');
 
 // Site
@@ -37,21 +37,19 @@ define('ADMIN_MODE_SESSION_KEY', 'is_admin');
 
 // Connexion à la base de données
 function getConnection() {
-    $con = new mysqli(
-        DB_HOST,
-        DB_USER,
-        DB_PASS,
-        DB_NAME,
-        DB_PORT
-    );
-
-    if ($con->connect_error) {
-        error_log("DB ERROR: " . $con->connect_error);
-        die("Erreur de connexion à la base de données");
+    $dsn = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+    $options = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false,
+    ];
+    try {
+        $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+        return $pdo;
+    } catch (PDOException $e) {
+        error_log("DB Connexion échouée: " . $e->getMessage());
+        die("Erreur de connexion à la base de données.");
     }
-
-    $con->set_charset("utf8mb4");
-    return $con;
 }
 
 // Session sécurisée
