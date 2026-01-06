@@ -71,9 +71,10 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                     
                     <div class="detail-actions">
                         <a href="liste.php" class="btn-back">← Retour à la liste</a>
-                        <a href="edit.php?id=<?php echo $livre['id']; ?>" class="btn-edit">Modifier</a>
-                        <a href="delete.php?id=<?php echo $livre['id']; ?>" class="btn-delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livre ?');">Supprimer</a>
-                    </div>
+                        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+                            <a href="admin/edit.php?id=<?php echo $livre['id']; ?>" class="btn-edit">Modifier</a>
+                            <a href="admin/delete.php?id=<?php echo $livre['id']; ?>" class="btn-delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livre ?');">Supprimer</a>
+                        <?php endif; ?></div>
                 </div>
                 <div class="detail-image">
                     <img src="get_image.php?id=<?php echo $livre['id']; ?>" alt="<?php echo htmlspecialchars($livre['titre']); ?>">
