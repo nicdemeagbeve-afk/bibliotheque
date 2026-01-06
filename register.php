@@ -26,25 +26,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = '❌ Les mots de passe ne correspondent pas.';
     } else {
         // Vérifier si email existe déjà
-        $stmt = $con->prepare("SELECT id_lecteur FROM lecteurs WHERE email = ?");
-        $stmt->bind_param('s', $email);
-        $stmt->execute();
-        if ($stmt->get_result()->num_rows > 0) {
-            $error = '❌ Cet email est déjà utilisé.';
-        } else {
-            // Insérer nouvel utilisateur
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $con->prepare("INSERT INTO lecteurs (nom_lecteur, email, mot_de_passe, role) VALUES (?, ?, ?, 'user')");
-            $stmt->bind_param('sss', $nom, $email, $hashed_password);
-            
-            if ($stmt->execute()) {
-                $success = '✅ Inscription réussie! Vous pouvez maintenant vous connecter.';
-                $_POST = []; // Clear form
+        try {
+            $stmt = $pdo->prepare("SELECT id_lecteur FROM lecteurs WHERE email = ?");
+            $stmt->execute([$email]);
+            if ($stmt->fetch()) {
+                $error = 'Cet email est déjà utilisé.';
             } else {
-                $error = '❌ Erreur lors de l\'inscription: ' . htmlspecialchars($stmt->error);
+                // Insérer nouvel utilisateur
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                $stmt = $pdo->prepare("INSERT INTO lecteurs (nom_lecteur, email, mot_de_passe, role) VALUES (?, ?, ?, 'user')");
+                
+                if ($stmt->execute([$nom, $email, $hashed_password])) {
+                    $success = 'Inscription réussie! Vous pouvez maintenant vous connecter.';
+                    $_POST = []; // Clear form
+                } else {
+                    $error = 'Erreur lors de l\'inscription.';
+                }
             }
+        } catch (PDOException $e) {
+            $error = 'Erreur de base de données : ' . htmlspecialchars($e->getMessage());
         }
-        $stmt->close();
     }
 }
 ?>
@@ -53,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/revisionphp/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <title>Inscription - Bibliothèques De la Reussite</title>
     <style>
         .auth-container {
@@ -145,16 +146,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1>Bibliothèques De la Reussite</h1>
         <nav>
             <ul>
-                <li><a href="/revisionphp/index.php">Accueil</a></li>
-                <li><a href="/revisionphp/liste.php">📚 Parcourir</a></li>
-                <li><a href="/revisionphp/login.php">🔐 Connexion</a></li>
+                <li><a href="index.php">Accueil</a></li>
+                <li><a href="liste.php">Parcourir</a></li>
+                <li><a href="login.php">Connexion</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
         <div class="auth-container">
-            <h2>📝 S'inscrire</h2>
+            <h2>S'inscrire</h2>
             
             <?php if ($error): ?>
                 <div class="error"><?= $error ?></div>
@@ -187,11 +188,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input type="password" name="password_confirm" id="password_confirm" placeholder="Confirmer le mot de passe" required>
                     </div>
 
-                    <button type="submit">✅ S'inscrire</button>
+                    <button type="submit">S'inscrire</button>
                 </form>
 
                 <div class="link-auth">
-                    Déjà inscrit? <a href="/revisionphp/login.php">Se connecter ici</a>
+                    Déjà inscrit? <a href="login.php">Se connecter ici</a>
                 </div>
             <?php endif; ?>
         </div>

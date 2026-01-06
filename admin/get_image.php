@@ -4,13 +4,12 @@
     if (isset($_GET['id']) && !empty($_GET['id'])) {
         $id = intval($_GET['id']);
         
-        $query = "SELECT image_data, image_type FROM livres WHERE id = $id";
-        $result = $con->query($query);
+        try {
+            $stmt = $pdo->prepare("SELECT image_data, image_type FROM livres WHERE id = ?");
+            $stmt->execute([$id]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($result && $result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            
-            if (!empty($row['image_data'])) {
+            if ($row && !empty($row['image_data'])) {
                 // Envoyer les bons en-têtes HTTP
                 header('Content-Type: ' . $row['image_type']);
                 header('Content-Length: ' . strlen($row['image_data']));
@@ -19,6 +18,8 @@
                 echo $row['image_data'];
                 exit;
             }
+        } catch (PDOException $e) {
+            error_log("Image fetch failed: " . $e->getMessage());
         }
     }
     

@@ -1,0 +1,8 @@
+.env
+admin/.env
+php_dev.ini
+setup_db.php
+*.log
+vendor/
+.gemini/
+.antigravityignore

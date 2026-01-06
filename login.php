@@ -17,35 +17,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($email) || empty($password)) {
         $error = '❌ Email et mot de passe obligatoires.';
     } else {
-        $stmt = $con->prepare("SELECT id_lecteur, nom_lecteur, mot_de_passe, role FROM lecteurs WHERE email = ?");
-        $stmt->bind_param('s', $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        try {
+            $stmt = $pdo->prepare("SELECT id_lecteur, nom_lecteur, mot_de_passe, role FROM lecteurs WHERE email = ?");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($result->num_rows === 1) {
-            $user = $result->fetch_assoc();
-            if (password_verify($password, $user['mot_de_passe'])) {
-                // Connexion réussie
-                session_regenerate_id(true);
-                $_SESSION['user_id'] = $user['id_lecteur'];
-                $_SESSION['user_name'] = $user['nom_lecteur'];
-                $_SESSION['user_email'] = $email;
-                $_SESSION['user_role'] = $user['role'];
+            if ($user) {
+                if (password_verify($password, $user['mot_de_passe'])) {
+                    // Connexion réussie
+                    session_regenerate_id(true);
+                    $_SESSION['user_id'] = $user['id_lecteur'];
+                    $_SESSION['user_name'] = $user['nom_lecteur'];
+                    $_SESSION['user_email'] = $email;
+                    $_SESSION['user_role'] = $user['role'];
 
-                // Mettre à jour dernier_acces
-                $stmt = $con->prepare("UPDATE lecteurs SET dernier_acces = NOW() WHERE id_lecteur = ?");
-                $stmt->bind_param('i', $user['id_lecteur']);
-                $stmt->execute();
+                    // Mettre à jour dernier_acces
+                    $stmt = $pdo->prepare("UPDATE lecteurs SET dernier_acces = NOW() WHERE id_lecteur = ?");
+                    $stmt->execute([$user['id_lecteur']]);
 
-                header("Location: /revisionphp/index.php");
-                exit;
+                    header("Location: /revisionphp/index.php");
+                    exit;
+                } else {
+                    $error = '❌ Mot de passe incorrect.';
+                }
             } else {
-                $error = '❌ Mot de passe incorrect.';
+                $error = '❌ Email non trouvé.';
             }
-        } else {
-            $error = '❌ Email non trouvé.';
+        } catch (PDOException $e) {
+            $error = '❌ Erreur de base de données : ' . htmlspecialchars($e->getMessage());
         }
-        $stmt->close();
     }
 }
 ?>
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/revisionphp/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <title>Connexion - Bibliothèques De la Reussite</title>
     <style>
         .auth-container {
@@ -138,16 +138,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1>Bibliothèques De la Reussite</h1>
         <nav>
             <ul>
-                <li><a href="/revisionphp/index.php">Accueil</a></li>
-                <li><a href="/revisionphp/liste.php">📚 Parcourir</a></li>
-                <li><a href="/revisionphp/register.php">📝 S'inscrire</a></li>
+                <li><a href="index.php">Accueil</a></li>
+                <li><a href="liste.php">Parcourir</a></li>
+                <li><a href="register.php">S'inscrire</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
         <div class="auth-container">
-            <h2>🔐 Se connecter</h2>
+            <h2>Se connecter</h2>
             
             <?php if ($error): ?>
                 <div class="error"><?= $error ?></div>
@@ -164,11 +164,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="password" name="password" id="password" placeholder="Votre mot de passe" required>
                 </div>
 
-                <button type="submit">✅ Se connecter</button>
+                <button type="submit">Se connecter</button>
             </form>
 
             <div class="link-auth">
-                Pas encore inscrit? <a href="/revisionphp/register.php">S'inscrire ici</a>
+                Pas encore inscrit? <a href="register.php">S'inscrire ici</a>
             </div>
         </div>
     </main>

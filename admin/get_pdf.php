@@ -4,13 +4,12 @@
     if (isset($_GET['id']) && !empty($_GET['id'])) {
         $id = intval($_GET['id']);
         
-        $query = "SELECT pdf_data, pdf_type FROM livres WHERE id = $id";
-        $result = $con->query($query);
+        try {
+            $stmt = $pdo->prepare("SELECT pdf_data, pdf_type FROM livres WHERE id = ?");
+            $stmt->execute([$id]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($result && $result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            
-            if (!empty($row['pdf_data'])) {
+            if ($row && !empty($row['pdf_data'])) {
                 // Envoyer les bons en-têtes HTTP
                 header('Content-Type: ' . $row['pdf_type']);
                 header('Content-Disposition: inline; filename="livre_' . $id . '.pdf"');
@@ -20,6 +19,8 @@
                 echo $row['pdf_data'];
                 exit;
             }
+        } catch (PDOException $e) {
+            error_log("PDF fetch failed: " . $e->getMessage());
         }
     }
     

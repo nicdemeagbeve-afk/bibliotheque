@@ -4,10 +4,11 @@ include "connexion.php";
 
 $livres = [];
 $query = "SELECT * FROM livres";
-$result = $con->query($query);
-
-if ($result) {
-    $livres = $result->fetch_all(MYSQLI_ASSOC);
+try {
+    $stmt = $pdo->query($query);
+    $livres = $stmt->fetchAll();
+} catch (PDOException $e) {
+    error_log("Query failed: " . $e->getMessage());
 }
 ?>
 <!DOCTYPE html>
@@ -23,18 +24,18 @@ if ($result) {
         <h1>Bibliothèques De la Reussite</h1>
         <nav>
             <ul>
-                <li> <a href="index.php">Acceuil</a></li>
-                <li> <a href="liste.php">📚 Parcourir</a></li>
-                <li> <a href="#favoris">❤️ Favoris</a></li>
+                <li> <a href="index.php">Accueil</a></li>
+                <li> <a href="liste.php">Parcourir</a></li>
+                <li> <a href="#favoris">Favoris</a></li>
                 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-                    <li> <a href="admin/create.php">➕ Ajouter</a></li>
+                    <li> <a href="admin/create.php">Ajouter</a></li>
                 <?php endif; ?>
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <li><a href="profile.php">👤 <?= htmlspecialchars(substr($_SESSION['user_name'], 0, 15)) ?></a></li>
-                    <li><a href="logout.php">🚪 Déconnexion</a></li>
+                    <li><a href="profile.php"><?= htmlspecialchars(substr($_SESSION['user_name'], 0, 15)) ?></a></li>
+                    <li><a href="logout.php">Déconnexion</a></li>
                 <?php else: ?>
-                    <li><a href="login.php">🔐 Connexion</a></li>
-                    <li><a href="register.php">📝 S'inscrire</a></li>
+                    <li><a href="login.php">Connexion</a></li>
+                    <li><a href="register.php">S'inscrire</a></li>
                 <?php endif; ?>
             </ul>
         </nav>

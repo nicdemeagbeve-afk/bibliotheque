@@ -3,11 +3,22 @@
 // Configuration Centralisée du Projet
 // ========================================
 
+// Chargement des variables d'environnement depuis le fichier .env si présent
+if (file_exists(__DIR__ . '/.env')) {
+    $lines = file(__DIR__ . '/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0 || !strpos($line, '=')) continue;
+        list($name, $value) = explode('=', $line, 2);
+        putenv(trim($name) . "=" . trim($value));
+        $_ENV[trim($name)] = trim($value);
+    }
+}
+
 // Base de données (ENV PRIORITAIRE)
-define('DB_HOST', getenv('DB_HOST') ?: 'gkg8okscco40wc4c44w8cc4g');
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
 define('DB_PORT', getenv('DB_PORT') ?: 3306);
 define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('DB_PASSWORD') ?: '0qsbHlBRl49m5EfI7TndcForVm5j3t8fubWAqoqCIzYlSm75GWmZGjFmbaEO0BQ0');
+define('DB_PASS', getenv('DB_PASS') ?: '');
 define('DB_NAME', getenv('DB_NAME') ?: 'bibliotheques_db');
 
 // Site

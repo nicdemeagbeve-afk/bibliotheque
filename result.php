@@ -5,15 +5,18 @@ include "connexion.php";
 $livres = [];
 
 if (isset($_GET["search"]) && !empty($_GET['search'])) {
-    $search = $con->real_escape_string($_GET['search']);
+    $search = $_GET['search'];
     $search_type = $_GET['search_type'] ?? 'titre';
+    $allowed_types = ['titre', 'auteur', 'maison_edition']; // Securing search type
+    if (!in_array($search_type, $allowed_types)) $search_type = 'titre';
 
-    //Requête SQL pour la recherche de livre
-    $query = "SELECT * FROM livres WHERE $search_type LIKE '%$search%'";
-    $result = $con->query($query);
-
-    if ($result) {
-        $livres = $result->fetch_all(MYSQLI_ASSOC);
+    try {
+        $query = "SELECT * FROM livres WHERE $search_type LIKE ?";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute(["%$search%"]);
+        $livres = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Search failed: " . $e->getMessage());
     }
 }
 ?>
@@ -31,17 +34,17 @@ if (isset($_GET["search"]) && !empty($_GET['search'])) {
         <nav>
             <ul>
                 <li><a href="index.php">Acceuil</a></li>
-                <li><a href="liste.php">📚 Parcourir</a></li>
-                <li><a href="index.php#favoris">❤️ Favoris</a></li>
+                <li><a href="liste.php">Parcourir</a></li>
+                <li><a href="index.php#favoris">Favoris</a></li>
                 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-                    <li><a href="admin/create.php">➕ Ajouter</a></li>
+                    <li><a href="admin/create.php">Ajouter</a></li>
                 <?php endif; ?>
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <li><a href="profile.php">👤 <?= htmlspecialchars(substr($_SESSION['user_name'], 0, 15)) ?></a></li>
-                    <li><a href="logout.php">🚪 Déconnexion</a></li>
+                    <li><a href="profile.php"><?= htmlspecialchars(substr($_SESSION['user_name'], 0, 15)) ?></a></li>
+                    <li><a href="logout.php">Déconnexion</a></li>
                 <?php else: ?>
-                    <li><a href="login.php">🔐 Connexion</a></li>
-                    <li><a href="register.php">📝 S'inscrire</a></li>
+                    <li><a href="login.php">Connexion</a></li>
+                    <li><a href="register.php">S'inscrire</a></li>
                 <?php endif; ?>
             </ul>
         </nav>

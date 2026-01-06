@@ -11,9 +11,15 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
 $livre = null;
 if (isset($_GET['id']) && !empty($_GET['id'])) {
     $id = intval($_GET['id']);
-    $res = $con->query("SELECT * FROM livres WHERE id = $id");
-    if ($res && $res->num_rows) $livre = $res->fetch_assoc();
-    else { header("Location: /revisionphp/index.php"); exit; }
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM livres WHERE id = ?");
+        $stmt->execute([$id]);
+        $livre = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$livre) { header("Location: /revisionphp/index.php"); exit; }
+    } catch (PDOException $e) {
+        error_log("Fetch failed: " . $e->getMessage());
+        header("Location: /revisionphp/index.php"); exit;
+    }
 } else {
     header("Location: /revisionphp/index.php"); exit;
 }
@@ -68,31 +74,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Build update query depending on which blob fields are present
-    $params = [];
-    if ($image_data !== null && $pdf_data !== null) {
-        $sql = "UPDATE livres SET titre=?, auteur=?, description=?, maison_edition=?, nombre_exemplaire=?, image_data=?, image_type=?, pdf_data=?, pdf_type=? WHERE id=?";
-        $stmt = $con->prepare($sql);
-        $stmt->bind_param('ssssissssi', $titre, $auteur, $description, $maison_edition, $nombre_exemplaire, $image_data, $image_type, $pdf_data, $pdf_type, $id);
-    } elseif ($image_data !== null) {
-        $sql = "UPDATE livres SET titre=?, auteur=?, description=?, maison_edition=?, nombre_exemplaire=?, image_data=?, image_type=? WHERE id=?";
-        $stmt = $con->prepare($sql);
-        $stmt->bind_param('ssssissi', $titre, $auteur, $description, $maison_edition, $nombre_exemplaire, $image_data, $image_type, $id);
-    } elseif ($pdf_data !== null) {
-        $sql = "UPDATE livres SET titre=?, auteur=?, description=?, maison_edition=?, nombre_exemplaire=?, pdf_data=?, pdf_type=? WHERE id=?";
-        $stmt = $con->prepare($sql);
-        $stmt->bind_param('ssssissi', $titre, $auteur, $description, $maison_edition, $nombre_exemplaire, $pdf_data, $pdf_type, $id);
-    } else {
-        $sql = "UPDATE livres SET titre=?, auteur=?, description=?, maison_edition=?, nombre_exemplaire=? WHERE id=?";
-        $stmt = $con->prepare($sql);
-        $stmt->bind_param('sssiii', $titre, $auteur, $description, $maison_edition, $nombre_exemplaire, $id);
-    }
+    try {
+        if ($image_data !== null && $pdf_data !== null) {
+            $sql = "UPDATE livres SET titre=?, auteur=?, description=?, maison_edition=?, nombre_exemplaire=?, image_data=?, image_type=?, pdf_data=?, pdf_type=? WHERE id=?";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$titre, $auteur, $description, $maison_edition, $nombre_exemplaire, $image_data, $image_type, $pdf_data, $pdf_type, $id]);
+        } elseif ($image_data !== null) {
+            $sql = "UPDATE livres SET titre=?, auteur=?, description=?, maison_edition=?, nombre_exemplaire=?, image_data=?, image_type=? WHERE id=?";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$titre, $auteur, $description, $maison_edition, $nombre_exemplaire, $image_data, $image_type, $id]);
+        } elseif ($pdf_data !== null) {
+            $sql = "UPDATE livres SET titre=?, auteur=?, description=?, maison_edition=?, nombre_exemplaire=?, pdf_data=?, pdf_type=? WHERE id=?";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$titre, $auteur, $description, $maison_edition, $nombre_exemplaire, $pdf_data, $pdf_type, $id]);
+        } else {
+            $sql = "UPDATE livres SET titre=?, auteur=?, description=?, maison_edition=?, nombre_exemplaire=? WHERE id=?";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$titre, $auteur, $description, $maison_edition, $nombre_exemplaire, $id]);
+        }
 
-    if (!$stmt) { echo "Prepare failed: " . $con->error; exit; }
-    if ($stmt->execute()) {
         header("Location: /revisionphp/detail.php?id=$id");
         exit;
-    } else {
-        echo "Erreur update: " . $stmt->error;
+    } catch (PDOException $e) {
+        echo "Erreur update: " . htmlspecialchars($e->getMessage());
         exit;
     }
 }
@@ -102,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/../revisionphp/css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <title>Modifier le livre</title>
 </head>
 <body>
@@ -110,10 +114,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1>Bibliothèques De la Reussite</h1>
         <nav>
             <ul>
-                <li><a href="/../revisionphp/index.php">Acceuil</a></li>
-                <li><a href="/../revisionphp/liste.php">📚 Parcourir</a></li>
-                <li><a href="/../revisionphp/index.php#favoris">❤️ Favoris</a></li>
-                <li><a href="create.php">➕ Ajouter</a></li>
+                <li><a href="../index.php">Accueil</a></li>
+                <li><a href="../liste.php">Parcourir</a></li>
+                <li><a href="../index.php#favoris">Favoris</a></li>
+                <li><a href="create.php">Ajouter</a></li>
             </ul>
         </nav>
     </header>
@@ -165,9 +169,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <footer> 
         <nav>
             <ul>
-                <li> <a href="/../revisionphp/faq.php">FAQ</a></li>
-                <li> <a href="/../revisionphp/conditions.php">Conditions d'utilisation</a></li>
-                <li><a href="/../revisionphp/apropos.php">À propos</a></li>
+                <li> <a href="../faq.php">FAQ</a></li>
+                <li> <a href="../conditions.php">Conditions d'utilisation</a></li>
+                <li><a href="../apropos.php">À propos</a></li>
             </ul>
         </nav>
 

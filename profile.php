@@ -14,33 +14,34 @@ $user_email = $_SESSION['user_email'];
 $user_role = $_SESSION['user_role'];
 
 // Récupérer infos de l'utilisateur
-$stmt = $con->prepare("SELECT id_lecteur, nom_lecteur, email, role, date_inscription, dernier_acces FROM lecteurs WHERE id_lecteur = ?");
-$stmt->bind_param('i', $user_id);
-$stmt->execute();
-$user = $stmt->get_result()->fetch_assoc();
-$stmt->close();
+try {
+    $stmt = $pdo->prepare("SELECT id_lecteur, nom_lecteur, email, role, date_inscription, dernier_acces FROM lecteurs WHERE id_lecteur = ?");
+    $stmt->execute([$user_id]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Compter favoris
-$user_id_str = (string)$user_id;
-$stmt = $con->prepare("SELECT COUNT(*) as total FROM favoris WHERE id_lecteur = ?");
-$stmt->bind_param('s', $user_id_str);
-$stmt->execute();
-$favoris_count = $stmt->get_result()->fetch_assoc()['total'];
-$stmt->close();
+    // Compter favoris
+    $user_id_str = (string)$user_id;
+    $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM favoris WHERE id_lecteur = ?");
+    $stmt->execute([$user_id_str]);
+    $favoris_count = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
 
-// Compter liste de lecture
-$stmt = $con->prepare("SELECT COUNT(*) as total FROM liste_lecture WHERE id_lecteur = ?");
-$stmt->bind_param('s', $user_id_str);
-$stmt->execute();
-$lecture_count = $stmt->get_result()->fetch_assoc()['total'];
-$stmt->close();
+    // Compter liste de lecture
+    $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM liste_lecture WHERE id_lecteur = ?");
+    $stmt->execute([$user_id_str]);
+    $lecture_count = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+} catch (PDOException $e) {
+    error_log("Profile data fetch failed: " . $e->getMessage());
+    $user = null;
+    $favoris_count = 0;
+    $lecture_count = 0;
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/revisionphp/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <title>Profil - Bibliothèques De la Reussite</title>
     <style>
         .profile-container {
@@ -166,17 +167,17 @@ $stmt->close();
         <h1>Bibliothèques De la Reussite</h1>
         <nav>
             <ul>
-                <li><a href="/revisionphp/index.php">Accueil</a></li>
-                <li><a href="/revisionphp/liste.php">📚 Parcourir</a></li>
-                <li><a href="/revisionphp/profile.php">👤 Profil</a></li>
-                <li><a href="/revisionphp/logout.php">🚪 Déconnexion</a></li>
+                <li><a href="index.php">Accueil</a></li>
+                <li><a href="liste.php">Parcourir</a></li>
+                <li><a href="profile.php">Profil</a></li>
+                <li><a href="logout.php">Déconnexion</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
         <div class="profile-container">
-            <h2>👤 Mon Profil</h2>
+            <h2>Mon Profil</h2>
 
             <div class="profile-info">
                 <div class="profile-row">
@@ -191,9 +192,9 @@ $stmt->close();
                     <span class="profile-label">Rôle:</span>
                     <span class="profile-value">
                         <?php if ($user['role'] === 'admin'): ?>
-                            <span class="role-badge role-admin">👑 ADMINISTRATEUR</span>
+                            <span class="role-badge role-admin">ADMINISTRATEUR</span>
                         <?php else: ?>
-                            <span class="role-badge role-user">📖 Utilisateur</span>
+                            <span class="role-badge role-user">Utilisateur</span>
                         <?php endif; ?>
                     </span>
                 </div>
@@ -221,13 +222,13 @@ $stmt->close();
             </div>
 
             <div class="button-group">
-                <a href="/revisionphp/index.php#favoris" class="btn btn-primary">❤️ Mes favoris</a>
-                <a href="/revisionphp/logout.php" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr?')">🚪 Déconnexion</a>
+                <a href="index.php#favoris" class="btn btn-primary">Mes favoris</a>
+                <a href="logout.php" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr?')">Déconnexion</a>
             </div>
 
             <?php if ($user['role'] === 'admin'): ?>
                 <div class="admin-link">
-                    <p><a href="/revisionphp/admin/create.php">➕ Ajouter un livre (Admin)</a></p>
+                    <p><a href="admin/create.php">Ajouter un livre (Admin)</a></p>
                 </div>
             <?php endif; ?>
         </div>
@@ -236,9 +237,9 @@ $stmt->close();
     <footer>
         <nav>
             <ul>
-                <li><a href="/revisionphp/faq.php">FAQ</a></li>
-                <li><a href="/revisionphp/conditions.php">Conditions d'utilisation</a></li>
-                <li><a href="/revisionphp/apropos.php">À propos</a></li>
+                <li><a href="faq.php">FAQ</a></li>
+                <li><a href="conditions.php">Conditions d'utilisation</a></li>
+                <li><a href="apropos.php">À propos</a></li>
             </ul>
         </nav>
         <h1>Bibliothèques De la Reussite</h1>

@@ -22,13 +22,17 @@ if (!$bookId || !in_array($action, ['add', 'remove'])) {
 }
 
 // create table if not exists, matching exercise structure
-$createSql = "CREATE TABLE IF NOT EXISTS liste_lecture (
-    id_livre INT DEFAULT NULL,
-    id_lecteur INT DEFAULT NULL,
-    date_emprunt DATE DEFAULT NULL,
-    date_retour DATE DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
-$con->query($createSql);
+try {
+    $createSql = "CREATE TABLE IF NOT EXISTS liste_lecture (
+        id_livre INT DEFAULT NULL,
+        id_lecteur INT DEFAULT NULL,
+        date_emprunt DATE DEFAULT NULL,
+        date_retour DATE DEFAULT NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+    $pdo->exec($createSql);
+} catch (PDOException $e) {
+    error_log("Table creation failed: " . $e->getMessage());
+}
 
 // if no lecteur provided, try to map session to a lecteur id, else leave NULL
 if (!$lecteurId) {
@@ -37,29 +41,33 @@ if (!$lecteurId) {
 
 if ($action === 'add') {
     $date_emprunt = date('Y-m-d');
-    // insert using columns matching exercise schema
-    $stmt = $con->prepare("INSERT INTO liste_lecture (id_livre, id_lecteur, date_emprunt) VALUES (?, ?, ?)");
-    $stmt->bind_param('iis', $bookId, $lecteurId, $date_emprunt);
-    $ok = $stmt->execute();
-    if ($ok) echo json_encode(['success' => true]);
-    else echo json_encode(['success' => false, 'message' => $con->error]);
-    $stmt->close();
+    try {
+        $stmt = $pdo->prepare("INSERT INTO liste_lecture (id_livre, id_lecteur, date_emprunt) VALUES (?, ?, ?)");
+        if ($stmt->execute([$bookId, $lecteurId, $date_emprunt])) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Insert failed']);
+        }
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
     exit;
 }
 
 if ($action === 'remove') {
-    if ($lecteurId === null) {
-        // remove entries without a specific lecteur
-        $stmt = $con->prepare("DELETE FROM liste_lecture WHERE id_livre = ? AND id_lecteur IS NULL");
-        $stmt->bind_param('i', $bookId);
-    } else {
-        $stmt = $con->prepare("DELETE FROM liste_lecture WHERE id_livre = ? AND id_lecteur = ?");
-        $stmt->bind_param('ii', $bookId, $lecteurId);
+    try {
+        if ($lecteurId === null) {
+            $stmt = $pdo->prepare("DELETE FROM liste_lecture WHERE id_livre = ? AND id_lecteur IS NULL");
+            $ok = $stmt->execute([$bookId]);
+        } else {
+            $stmt = $pdo->prepare("DELETE FROM liste_lecture WHERE id_livre = ? AND id_lecteur = ?");
+            $ok = $stmt->execute([$bookId, $lecteurId]);
+        }
+        if ($ok) echo json_encode(['success' => true]);
+        else echo json_encode(['success' => false, 'message' => 'Delete failed']);
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
     }
-    $ok = $stmt->execute();
-    if ($ok) echo json_encode(['success' => true]);
-    else echo json_encode(['success' => false, 'message' => $con->error]);
-    $stmt->close();
     exit;
 }
 

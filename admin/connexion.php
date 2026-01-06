@@ -1,9 +1,19 @@
 <?php
 // admin/connexion.php recommandé (PDO)
-$DB_HOST = getenv('DB_HOST') ?: 'mysql-database-o84o4skkk8000c0kkcsos4oc';
-$DB_NAME = getenv('DB_NAME') ?: 'default';
-$DB_USER = getenv('DB_USER') ?: 'mysql';
-$DB_PASS = getenv('DB_PASS') ?: 'rFzwnPxDKQa9dbTjuhbGt94mqJwOaJ5erpUjU8pjqqoil58bjtdPb6Lq1XMYPino';
+// Chargement des variables d'environnement si non déjà chargées
+if (!getenv('DB_HOST') && file_exists(__DIR__ . '/../.env')) {
+    $lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0 || !strpos($line, '=')) continue;
+        list($name, $value) = explode('=', $line, 2);
+        putenv(trim($name) . "=" . trim($value));
+    }
+}
+
+$DB_HOST = getenv('DB_HOST') ?: 'localhost';
+$DB_NAME = getenv('DB_NAME') ?: 'bibliotheques_db';
+$DB_USER = getenv('DB_USER') ?: 'root';
+$DB_PASS = getenv('DB_PASS') ?: '';
 
 $options = [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

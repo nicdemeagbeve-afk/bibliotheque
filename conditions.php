@@ -11,15 +11,15 @@
         <h1>Bibliothèques De la Reussite</h1>
         <nav>
             <ul>
-                <li><a href="index.php">Acceuil</a></li>
-                <li><a href="liste.php">📚 Parcourir</a></li>
-                <li><a href="index.php#favoris">❤️ Favoris</a></li>
+                <li><a href="index.php">Accueil</a></li>
+                <li><a href="liste.php">Parcourir</a></li>
+                <li><a href="index.php#favoris">Favoris</a></li>
                 <?php session_start(); if (!empty($_SESSION['is_admin'])): ?>
-                    <li><a href="create.php">➕ Ajouter</a></li>
+                    <li><a href="create.php">Ajouter</a></li>
                     <li><a href="admin/">Admin</a></li>
-                    <li><a href="admin_toggle.php?action=logout">🔒 Quitter admin</a></li>
+                    <li><a href="admin_toggle.php?action=logout">Quitter admin</a></li>
                 <?php else: ?>
-                    <li><a href="admin_toggle.php?action=login">🔑 Mode admin</a></li>
+                    <li><a href="admin_toggle.php?action=login">Mode admin</a></li>
                 <?php endif; ?>
             </ul>
         </nav>
@@ -27,7 +27,7 @@
 
     <main style="max-width: 900px; margin: 40px auto; padding: 20px;">
         <section style="background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
-            <h2 style="color: #333; margin-bottom: 30px; border-bottom: 3px solid #f59e0b; padding-bottom: 10px;">⚖️ Conditions d'Utilisation</h2>
+            <h2 style="color: #333; margin-bottom: 30px; border-bottom: 3px solid #f59e0b; padding-bottom: 10px;">Conditions d'Utilisation</h2>
 
             <div style="margin-bottom: 25px;">
                 <h3 style="color: #f59e0b; margin-bottom: 10px;">1. Objet</h3>

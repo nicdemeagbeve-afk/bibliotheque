@@ -5,13 +5,14 @@ include "connexion.php";
 $livre = null;
 
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $id = intval($_GET['id']); // Sécurise l'ID
+    $id = intval($_GET['id']); 
     
-    $query = "SELECT * FROM livres WHERE id = $id";
-    $result = $con->query($query);
-
-    if ($result && $result->num_rows > 0) {
-        $livre = $result->fetch_assoc();
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM livres WHERE id = ?");
+        $stmt->execute([$id]);
+        $livre = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Query failed: " . $e->getMessage());
     }
 }
 ?>
@@ -29,17 +30,17 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         <nav>
             <ul>
                 <li><a href="index.php">Acceuil</a></li>
-                <li><a href="liste.php">📚 Parcourir</a></li>
-                <li><a href="index.php#favoris">❤️ Favoris</a></li>
+                <li><a href="liste.php">Parcourir</a></li>
+                <li><a href="index.php#favoris">Favoris</a></li>
                 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-                    <li><a href="admin/create.php">➕ Ajouter</a></li>
+                    <li><a href="admin/create.php">Ajouter</a></li>
                 <?php endif; ?>
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <li><a href="profile.php">👤 <?= htmlspecialchars(substr($_SESSION['user_name'], 0, 15)) ?></a></li>
-                    <li><a href="logout.php">🚪 Déconnexion</a></li>
+                    <li><a href="profile.php"><?= htmlspecialchars(substr($_SESSION['user_name'], 0, 15)) ?></a></li>
+                    <li><a href="logout.php">Déconnexion</a></li>
                 <?php else: ?>
-                    <li><a href="login.php">🔐 Connexion</a></li>
-                    <li><a href="register.php">📝 S'inscrire</a></li>
+                    <li><a href="login.php">Connexion</a></li>
+                    <li><a href="register.php">S'inscrire</a></li>
                 <?php endif; ?>
             </ul>
         </nav>
@@ -61,16 +62,16 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                     
                     <?php if (!empty($livre['pdf_data'])): ?>
                     <div class="pdf-section">
-                        <h3>📕 Lecture</h3>
+                        <h3>Lecture</h3>
                         <p>Un PDF est disponible pour ce livre. Cliquez ci-dessous pour le lire en entier.</p>
-                        <a href="#" onclick="openPdfReader(<?php echo $livre['id']; ?>); return false;" class="btn-read">📖 Lire le livre</a>
+                        <a href="#" onclick="openPdfReader(<?php echo $livre['id']; ?>); return false;" class="btn-read">Lire le livre</a>
                     </div>
                     <?php endif; ?>
                     
                     <div class="detail-actions">
                         <a href="liste.php" class="btn-back">← Retour à la liste</a>
-                        <a href="edit.php?id=<?php echo $livre['id']; ?>" class="btn-edit">✏️ Modifier</a>
-                        <a href="delete.php?id=<?php echo $livre['id']; ?>" class="btn-delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livre ?');">🗑️ Supprimer</a>
+                        <a href="edit.php?id=<?php echo $livre['id']; ?>" class="btn-edit">Modifier</a>
+                        <a href="delete.php?id=<?php echo $livre['id']; ?>" class="btn-delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livre ?');">Supprimer</a>
                     </div>
                 </div>
                 <div class="detail-image">

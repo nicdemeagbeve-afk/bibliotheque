@@ -62,27 +62,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     // Prepared insert
-    $sql = "INSERT INTO livres (titre, auteur, description, maison_edition, nombre_exemplaire, image_data, image_type, pdf_data, pdf_type)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    $stmt = $con->prepare($sql);
-    if (!$stmt) {
-        echo "Prepare failed: " . htmlspecialchars($con->error);
-        exit;
-    }
-
-    // types: 4 strings, 1 int, then 4 strings (BLOBs bound as strings)
-    $types = 'ssssissss'; // titre,auteur,description,maison_edition,int,image_data,image_type,pdf_data,pdf_type
     try {
-        $stmt->bind_param($types, $titre, $auteur, $description, $maison_edition, $nombre_exemplaire, $image_data, $image_type, $pdf_data, $pdf_type);
-        if (!$stmt->execute()) {
-            throw new Exception($stmt->error);
-        }
+        $sql = "INSERT INTO livres (titre, auteur, description, maison_edition, nombre_exemplaire, image_data, image_type, pdf_data, pdf_type)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $pdo->prepare($sql);
+        
+        $stmt->execute([
+            $titre, 
+            $auteur, 
+            $description, 
+            $maison_edition, 
+            $nombre_exemplaire, 
+            $image_data, 
+            $image_type, 
+            $pdf_data, 
+            $pdf_type
+        ]);
+
         header("Location: /revisionphp/index.php");
         exit;
-    } catch (mysqli_sql_exception $e) {
+    } catch (PDOException $e) {
         // Common cause: packet too large
         echo "Erreur base de données: " . htmlspecialchars($e->getMessage()) . "<br>";
-        echo "Si le message contient 'max_allowed_packet', augmentez cette valeur dans la configuration MySQL (voir instructions).";
+        echo "Si le message contient 'max_allowed_packet', augmentez cette valeur dans la configuration MySQL.";
         exit;
     } catch (Exception $e) {
         echo "Erreur lors de l'insertion: " . htmlspecialchars($e->getMessage());
@@ -95,7 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/../revisionphp/css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <title>Ajout de livre</title>
 </head>
 <body>
@@ -103,17 +105,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <h1>Bibliothèques De la Reussite</h1>
         <nav>
             <ul>
-                <li><a href="/../revisionphp/index.php">Acceuil</a></li>
-                <li><a href="/../revisionphp/liste.php">📚 Parcourir</a></li>
-                <li><a href="/../revisionphp/index.php#favoris">❤️ Favoris</a></li>
-                <li><a href="create.php">➕ Ajouter</a></li>
+                <li><a href="../index.php">Accueil</a></li>
+                <li><a href="../liste.php">Parcourir</a></li>
+                <li><a href="../index.php#favoris">Favoris</a></li>
+                <li><a href="create.php">Ajouter</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
         <section class="ajout">
-            <h2>📖 Ajouter un nouveau livre</h2>
+            <h2>Ajouter un nouveau livre</h2>
             <form action="" method="post" enctype="multipart/form-data">
                 <div>
                     <label for="titre">Titre du livre:</label>
@@ -143,7 +145,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <label for="pdf_upload">PDF du livre (optionnel):</label>
                     <input type="file" name="pdf_upload" id="pdf_upload" accept=".pdf">
                 </div>
-                <button type="submit">✅ Ajouter le livre</button>
+                <button type="submit">Ajouter le livre</button>
             </form>
         </section>
 
@@ -152,9 +154,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <footer> 
         <nav>
             <ul>
-                <li> <a href="/../revisionphp/faq.php">FAQ</a></li>
-                <li> <a href="/../revisionphp/conditions.php">Conditions d'utilisation</a></li>
-                <li><a href="/../revisionphp/apropos.php">À propos</a></li>
+                <li> <a href="../faq.php">FAQ</a></li>
+                <li> <a href="../conditions.php">Conditions d'utilisation</a></li>
+                <li><a href="../apropos.php">À propos</a></li>
             </ul>
         </nav>
 
