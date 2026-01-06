@@ -21,7 +21,7 @@
 ### Étape 2️⃣: Accéder à l'Application (instant!)
 
 ```
-Ouvrez: http://localhost/revisionphp
+Ouvrez: http://localhost:3000
 ```
 
 **Vous devriez voir**: 

@@ -86,8 +86,6 @@ try {
                                 </td>
                                 <td class="actions-cell">
                                     <a href="detail.php?id=<?php echo $livre['id']; ?>" class="btn-details">Voir</a>
-                                    <a href="admin/edit.php?id=<?php echo $livre['id']; ?>" class="btn-edit">Modifier</a>
-                                    <a href="admin/delete.php?id=<?php echo $livre['id']; ?>" class="btn-delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livre ?');">Supprimer</a>
                                     <button class="favorite-btn-small" onclick="toggleFavorite(this, <?php echo $livre['id']; ?>, '<?php echo htmlspecialchars($livre['titre']); ?>')">♡</button>
                                 </td>
                             </tr>

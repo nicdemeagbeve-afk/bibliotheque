@@ -4,7 +4,7 @@ include __DIR__ . '/../connexion.php';
 
 // Vérifier si admin
 if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
-    header("Location: /revisionphp/login.php");
+    header("Location: /login.php");
     exit;
 }
 
@@ -15,13 +15,13 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         $stmt = $pdo->prepare("SELECT * FROM livres WHERE id = ?");
         $stmt->execute([$id]);
         $livre = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$livre) { header("Location: /revisionphp/index.php"); exit; }
+        if (!$livre) { header("Location: ../index.php"); exit; }
     } catch (PDOException $e) {
         error_log("Fetch failed: " . $e->getMessage());
-        header("Location: /revisionphp/index.php"); exit;
+        header("Location: ../index.php"); exit;
     }
 } else {
-    header("Location: /revisionphp/index.php"); exit;
+    header("Location: ../index.php"); exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$titre, $auteur, $description, $maison_edition, $nombre_exemplaire, $id]);
         }
 
-        header("Location: /revisionphp/detail.php?id=$id");
+        header("Location: ../detail.php?id=$id");
         exit;
     } catch (PDOException $e) {
         echo "Erreur update: " . htmlspecialchars($e->getMessage());

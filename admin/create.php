@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 
 // Vérifier si admin
 if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
-    header("Location: /revisionphp/login.php");
+    header("Location: ../login.php");
     exit;
 }
 
@@ -79,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $pdf_type
         ]);
 
-        header("Location: /revisionphp/index.php");
+        header("Location: ../index.php");
         exit;
     } catch (PDOException $e) {
         // Common cause: packet too large

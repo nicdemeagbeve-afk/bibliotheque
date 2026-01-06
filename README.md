@@ -78,7 +78,7 @@ $con = new mysqli("127.0.0.1", "root", "", "bibliotheques_db");
 Modifiez si nécessaire selon votre configuration MySQL.
 
 ### Étape 3: Vérifier l'Installation
-- Accédez à http://localhost/revisionphp
+- Accédez à http://localhost:3000
 - Vous devriez voir la page d'accueil
 - Cliquez sur "🔑 Mode admin" pour accéder au panel d'administration
 

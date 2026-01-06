@@ -133,7 +133,7 @@ admin/connexion.php → Base de données
 ## 🎯 Prochaines Étapes
 
 1. ✅ Exécutez `sql/SETUP_COMPLET.sql` dans phpMyAdmin
-2. ✅ Testez l'application à `http://localhost/revisionphp`
+2. ✅ Testez l'application à `http://localhost:3000`
 3. ✅ Activez le mode admin
 4. ✅ Créez votre premier livre
 5. ✅ Explorez toutes les fonctionnalités

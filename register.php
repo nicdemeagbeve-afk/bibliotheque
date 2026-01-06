@@ -164,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php if ($success): ?>
                 <div class="success"><?= $success ?></div>
                 <p style="text-align: center; margin-top: 15px;">
-                    <a href="/revisionphp/login.php" style="color: white; text-decoration: none; border-bottom: 2px solid white;">Aller à la connexion</a>
+                    <a href="../login.php" style="color: white; text-decoration: none; border-bottom: 2px solid white;">Aller à la connexion</a>
                 </p>
             <?php else: ?>
                 <form method="POST">
@@ -201,9 +201,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <footer>
         <nav>
             <ul>
-                <li><a href="/revisionphp/faq.php">FAQ</a></li>
-                <li><a href="/revisionphp/conditions.php">Conditions d'utilisation</a></li>
-                <li><a href="/revisionphp/apropos.php">À propos</a></li>
+                <li><a href="../faq.php">FAQ</a></li>
+                <li><a href="../conditions.php">Conditions d'utilisation</a></li>
+                <li><a href="../apropos.php">À propos</a></li>
             </ul>
         </nav>
         <h1>Bibliothèques De la Reussite</h1>

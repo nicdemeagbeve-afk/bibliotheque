@@ -9,21 +9,21 @@ echo "🧹 Nettoyage du projet..."
 
 # 1. Supprimer les fichiers SQL obsolètes (garder seulement SETUP_COMPLET.sql)
 echo "❌ Suppression des fichiers SQL obsolètes..."
-rm -f /opt/lampp/htdocs/revisionphp/bibliotheques_db.sql
-rm -f /opt/lampp/htdocs/revisionphp/db_setup.sql
-rm -f /opt/lampp/htdocs/revisionphp/lecteurs.sql
-rm -f /opt/lampp/htdocs/revisionphp/liste_lecture.sql
-rm -f /opt/lampp/htdocs/revisionphp/alter_pdf_columns.sql
+rm -f /opt/lampp/htdocs../bibliotheques_db.sql
+rm -f /opt/lampp/htdocs../db_setup.sql
+rm -f /opt/lampp/htdocs../lecteurs.sql
+rm -f /opt/lampp/htdocs../liste_lecture.sql
+rm -f /opt/lampp/htdocs../alter_pdf_columns.sql
 
 # 2. Supprimer les fichiers PHP redondants
 echo "❌ Suppression des fichiers PHP inutilisés..."
-rm -f /opt/lampp/htdocs/revisionphp/favorites.php
-rm -f /opt/lampp/htdocs/revisionphp/history.php
-rm -f /opt/lampp/htdocs/revisionphp/wishlist.php
+rm -f /opt/lampp/htdocs../favorites.php
+rm -f /opt/lampp/htdocs../history.php
+rm -f /opt/lampp/htdocs../wishlist.php
 
 # 3. Supprimer les fichiers textes inutilisés
 echo "❌ Suppression des fichiers textes..."
-rm -f /opt/lampp/htdocs/revisionphp/GUIDE_IMAGES_BASE_DE_DONNEES.txt
+rm -f /opt/lampp/htdocs../GUIDE_IMAGES_BASE_DE_DONNEES.txt
 
 echo ""
 echo "✅ Nettoyage terminé!"
